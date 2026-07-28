@@ -1,0 +1,2 @@
+class ConversationState:
+    pending = None

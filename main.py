@@ -30,9 +30,9 @@ class ChatRequest(BaseModel):
 
 @app.post("/process")
 def process(request: ChatRequest):
-
+    print(f"request : {request}")
     request_object = engine.process(request.message)
-
+    print(f"REQUEST OBJECT: {request_object}")
     response = orchestrator.process(request_object)
-
+    print(f"RESPONSE: {response}")
     return response

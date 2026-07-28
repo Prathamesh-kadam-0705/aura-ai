@@ -9,6 +9,15 @@ class AlarmModule:
 
     def create(self, request):
 
+        # Safety check (normally Orchestrator should handle this)
+        if request.entities.get("time") is None:
+            return {
+                "success": False,
+                "need_input": True,
+                "missing": "time",
+                "message": "Time is required to create an alarm."
+            }
+
         db = SessionLocal()
 
         try:
@@ -19,19 +28,13 @@ class AlarmModule:
                     request.entities.get("time")
                 ),
 
-                label=request.entities.get(
-                    "label"
-                )
+                label=request.entities.get("label")
 
             )
 
-
             db.add(alarm)
-
             db.commit()
-
             db.refresh(alarm)
-
 
             return {
 
@@ -53,19 +56,17 @@ class AlarmModule:
 
             }
 
-
         except Exception as e:
 
             db.rollback()
 
             return {
 
-                "success":False,
+                "success": False,
 
-                "message":str(e)
+                "message": str(e)
 
             }
-
 
         finally:
 

@@ -59,7 +59,7 @@ class EntityRouter:
 
 
 
-        # ======================
+       # ======================
         # REMINDER
         # ======================
 
@@ -69,54 +69,82 @@ class EntityRouter:
             time = None
 
 
-            if "tomorrow" in text:
+            # Date extraction
+            if "tomorrow" in text or "tommoro" in text:
 
                 date = "tomorrow"
+
+                text = text.replace("tomorrow", "")
+                text = text.replace("tommoro", "")
 
 
             elif "today" in text:
 
                 date = "today"
 
+                text = text.replace("today", "")
 
 
+
+            # Time extraction
             time_match = re.search(
-                r'(\d{1,2}(:\d{2})?\s?(am|pm))',
-                user_input,
-                re.IGNORECASE
+            r'(\d{1,2})\s*(\d{1,2})?\s*(clock|am|pm)?',
+            text,
+            re.IGNORECASE
+        )
+
+
+        if time_match:
+
+            hour = time_match.group(1)
+            minute = time_match.group(2)
+
+
+            if minute:
+
+                time = f"{hour}:{minute}"
+
+            else:
+
+                time = f"{hour}:00"
+
+
+            text = text.replace(
+                time_match.group(0),
+                ""
             )
 
 
-            if time_match:
-
-                time = time_match.group(1)
-
-
-
-            task = text
-
-
+            # Remove command words
             remove_words = [
 
                 "remind me to",
+                "remind me",
                 "reminder",
                 "set reminder",
                 "create reminder",
-                "tomorrow",
-                "today"
+                "set"
 
             ]
 
 
             for word in remove_words:
 
-                task = task.replace(word, "")
+                text = text.replace(word, "")
+
+
+
+            task = text.strip()
+
+
+            if task == "":
+                task = None
 
 
 
             return {
 
-                "task": task.strip(),
+                "task": task,
                 "date": date,
                 "time": time
 
